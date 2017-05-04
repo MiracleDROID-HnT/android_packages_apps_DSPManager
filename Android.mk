@@ -1,28 +1,58 @@
-LOCAL_PATH:= $(call my-dir)
+LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
+
+LOCAL_VENDOR_MODULE := true
+
+LOCAL_MODULE := libcyanogen-dsp
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_PROGUARD_FLAG_FILES := proguard.flags
+LOCAL_MODULE_RELATIVE_PATH := soundfx
 
-appcompat_dir := ./prebuilts/sdk/current/support/v7/appcompat/res
+LOCAL_PRELINK_MODULE := false
 
-LOCAL_STATIC_JAVA_LIBRARIES := android-support-v13
-LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-appcompat
+LOCAL_ARM_MODE := arm
 
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_SRC_FILES := \
+	cyanogen-dsp.cpp \
+	Biquad.cpp \
+	Delay.cpp \
+	Effect.cpp \
+	EffectBassBoost.cpp \
+	EffectCompression.cpp \
+	EffectEqualizer.cpp \
+	EffectVirtualizer.cpp \
+	EffectStereoWide.cpp \
+	FIR16.cpp
 
-LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
-LOCAL_RESOURCE_DIR += $(appcompat_dir)
+LOCAL_C_INCLUDES += \
+        frameworks/av/include \
+        hardware/libhardware/include \
+        system/core/include \
+        system/core/base/include \
+        system/media/audio/include \
+        system/media/audio_effects/include \
+        frameworks/native/libs/binder/include
 
-LOCAL_AAPT_FLAGS := --auto-add-overlay
-LOCAL_AAPT_FLAGS += --extra-packages android.support.v7.appcompat
+LOCAL_SHARED_LIBRARIES := \
+	libcutils \
+	liblog
 
-LOCAL_PACKAGE_NAME := DSPManager
+include $(BUILD_SHARED_LIBRARY)
 
-LOCAL_OVERRIDES_PACKAGES := MusicFX
+ifneq ($(TARGET_USE_DEVICE_AUDIO_EFFECTS_CONF),true)
+include $(CLEAR_VARS)
 
-include $(BUILD_PACKAGE)
+LOCAL_MODULE := audio_effects.xml
 
-# Use the folloing include to make our test apk.
-include $(call all-makefiles-under,$(LOCAL_PATH))
+LOCAL_SRC_FILES := $(LOCAL_MODULE)
+
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_MODULE_CLASS := ETC
+
+LOCAL_VENDOR_MODULE := true
+
+include $(BUILD_PREBUILT)
+endif
