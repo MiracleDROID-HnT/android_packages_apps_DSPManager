@@ -44,7 +44,7 @@ include $(BUILD_SHARED_LIBRARY)
 ifneq ($(TARGET_USE_DEVICE_AUDIO_EFFECTS_CONF),true)
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := audio_effects.conf
+LOCAL_MODULE := audio_effects.xml
 
 LOCAL_SRC_FILES := $(LOCAL_MODULE)
 
